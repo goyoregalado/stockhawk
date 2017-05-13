@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.ui.StockHawkBroadcastReceiver;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public final class QuoteSyncJob {
 
     private static final int ONE_OFF_ID = 2;
     private static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
+
     private static final int PERIOD = 300000;
     private static final int INITIAL_BACKOFF = 10000;
     private static final int PERIODIC_ID = 1;
@@ -106,8 +109,18 @@ public final class QuoteSyncJob {
                     quoteCVs.add(quoteCV);
                 }
                 else {
+                    // The stock code entered by the user is not valid, we don't want it in our
+                    // preferences anymore
+                    Timber.w(symbol);
+                    PrefUtils.removeStock(context, symbol);
                     String message = context.getString(R.string.toast_invalid_stock_error);
                     Timber.w(message);
+                    Intent intent = new Intent();
+                    intent.setAction(StockHawkBroadcastReceiver.BAD_SYMBOL);
+                    intent.putExtra(StockHawkBroadcastReceiver.BAD_SYMBOL_KEY, symbol);
+
+                    LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);
+                    broadcastManager.sendBroadcast(intent);
                 }
             }
 

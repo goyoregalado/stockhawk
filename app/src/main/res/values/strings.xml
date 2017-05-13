@@ -19,6 +19,7 @@
 
 
     <string name="action_change_units" translatable="false">@string/pref_display_mode_key</string>
+    <string name="action_change_units_description">A button to change the units</string>
 
 
     <string name="dialog_title">Add Stock</string>
