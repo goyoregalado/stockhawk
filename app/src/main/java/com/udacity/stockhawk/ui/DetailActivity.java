@@ -85,9 +85,11 @@ public class DetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         Intent intentThatStartedActivity = getIntent();
-        if (intentThatStartedActivity.hasExtra(Intent.EXTRA_TEXT)) {
-            String symbol = intentThatStartedActivity.getStringExtra(Intent.EXTRA_TEXT);
+        if (intentThatStartedActivity.hasExtra(MainActivity.STOCK_KEY)
+                && intentThatStartedActivity.hasExtra(MainActivity.DISPLAY_MODE_KEY)) {
+            String symbol = intentThatStartedActivity.getStringExtra(MainActivity.STOCK_KEY);
             tvSymbol.setText(symbol);
+            String displayMode = intentThatStartedActivity.getStringExtra(MainActivity.DISPLAY_MODE_KEY);
             Cursor cursor = getContentResolver().query(
                     Contract.Quote.makeUriForStock(symbol),
                     null,
@@ -105,17 +107,25 @@ public class DetailActivity extends AppCompatActivity {
                     float rawAbsoluteChange = cursor.getFloat(Contract.Quote.POSITION_ABSOLUTE_CHANGE);
                     float percentageChange = cursor.getFloat(Contract.Quote.POSITION_PERCENTAGE_CHANGE);
 
-
-                    if (rawAbsoluteChange > 0) {
-                        tvChange.setBackgroundResource(R.drawable.percent_change_pill_green);
-                    } else {
-                        tvChange.setBackgroundResource(R.drawable.percent_change_pill_red);
-                    }
-
                     String change = dollarFormatWithPlus.format(rawAbsoluteChange);
                     String percentage = percentageFormat.format(percentageChange / 100);
 
-                    tvChange.setText(change);
+                    if (displayMode.equals(this.getString(R.string.pref_display_mode_absolute_key))) {
+                        if (rawAbsoluteChange > 0) {
+                            tvChange.setBackgroundResource(R.drawable.percent_change_pill_green);
+                        } else {
+                            tvChange.setBackgroundResource(R.drawable.percent_change_pill_red);
+                        }
+                        tvChange.setText(change);
+                    }
+                    else {
+                        if (percentageChange > 0) {
+                            tvChange.setBackgroundResource(R.drawable.percent_change_pill_green);
+                        } else {
+                            tvChange.setBackgroundResource(R.drawable.percent_change_pill_red);
+                        }
+                        tvChange.setText(percentage);
+                    }
                     String history = cursor.getString(Contract.Quote.POSITION_HISTORY);
                     Timber.d("Super history: " + history);
                     historyParser(history);
@@ -149,11 +159,6 @@ public class DetailActivity extends AppCompatActivity {
 
         LineData lineData = new LineData(dataset);
         chart.setData(lineData);
- /*       Description description = new Description();
-        description.setTextColor(mContext.getColor(R.color.colorAccent));
-        description.setTextSize(65);
-        description.setText(mContext.getString(R.string.chart_content_description, tvSymbol.getText()));
-        chart.setDescription(description);*/
         chart.setAutoScaleMinMaxEnabled(true);
 
         XAxis xAxis = chart.getXAxis();

@@ -29,6 +29,7 @@
 
     <string name="error_no_network">No network connectivity! Can\'t show your stocks until network is back</string>
     <string name="error_no_stocks">No stocks added! Add one using the button</string>
+    <string name="error_empty_list">There isn\'t any Stock yet</string>
 
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will be shown when network available.</string>
     <string name="toast_no_connectivity">No conectivity: Your values can be outdated. Will refresh when network available.</string>

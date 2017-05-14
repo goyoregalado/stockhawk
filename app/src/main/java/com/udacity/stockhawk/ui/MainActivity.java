@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         SwipeRefreshLayout.OnRefreshListener,
         StockAdapter.StockAdapterOnClickHandler {
 
+    public static final String STOCK_KEY = "symbol";
+    public static final String DISPLAY_MODE_KEY = "display_mode";
+
     private static final int STOCK_LOADER = 0;
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.recycler_view)
@@ -58,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         Intent detailActivityIntent = new Intent(context, destinationClass);
 
-        detailActivityIntent.putExtra(Intent.EXTRA_TEXT, symbol);
+        detailActivityIntent.putExtra(STOCK_KEY, symbol);
+        detailActivityIntent.putExtra(DISPLAY_MODE_KEY, PrefUtils.getDisplayMode(this));
 
         startActivity(detailActivityIntent);
 

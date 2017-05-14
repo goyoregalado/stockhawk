@@ -128,6 +128,7 @@ public final class QuoteSyncJob {
                             quoteCVs.toArray(new ContentValues[quoteCVs.size()]));
 
             Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+            Timber.d("Sending broadcast");
             context.sendBroadcast(dataUpdatedIntent);
 
         } catch (IOException exception) {
