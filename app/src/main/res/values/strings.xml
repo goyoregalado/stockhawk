@@ -27,6 +27,7 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_add">Add</string>
 
+    <string name="generic_error_message">Error message</string>
     <string name="error_no_network">No network connectivity! Can\'t show your stocks until network is back</string>
     <string name="error_no_stocks">No stocks added! Add one using the button</string>
     <string name="error_empty_list">There isn\'t any Stock yet</string>
@@ -40,5 +41,6 @@
     <string name="add_widget">Add widget</string>
 
     <string name="chart_content_description">Historical data for %s</string>
+    <string name="example_symbol">GOOG</string>
 
 </resources>

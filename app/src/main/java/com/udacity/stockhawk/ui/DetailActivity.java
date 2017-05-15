@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.EntryXComparator;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
+import com.udacity.stockhawk.data.MoneyFormatUtils;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -45,9 +47,6 @@ import timber.log.Timber;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private DecimalFormat dollarFormatWithPlus;
-    private DecimalFormat dollarFormat;
-    private DecimalFormat percentageFormat;
     private Context mContext;
 
     @BindView(R.id.tv_symbol)
@@ -71,16 +70,6 @@ public class DetailActivity extends AppCompatActivity {
 
         mContext = this;
 
-        dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
-        dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
-        dollarFormatWithPlus.setPositivePrefix("+$");
-        percentageFormat = (DecimalFormat) NumberFormat.getPercentInstance(Locale.getDefault());
-        percentageFormat.setMaximumFractionDigits(2);
-        percentageFormat.setMinimumFractionDigits(2);
-        percentageFormat.setPositivePrefix("+");
-
-
-
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
@@ -99,16 +88,15 @@ public class DetailActivity extends AppCompatActivity {
             try {
                 while (cursor.moveToNext()) {
 
-                            //String symbol = cursor.getString(Contract.Quote.POSITION_SYMBOL));
-                    String price = dollarFormat.format(cursor.getFloat(Contract.Quote.POSITION_PRICE));
+                    String price = MoneyFormatUtils.formatDollar(cursor.getFloat(Contract.Quote.POSITION_PRICE));
                     tvPrice.setText(price);
 
 
                     float rawAbsoluteChange = cursor.getFloat(Contract.Quote.POSITION_ABSOLUTE_CHANGE);
                     float percentageChange = cursor.getFloat(Contract.Quote.POSITION_PERCENTAGE_CHANGE);
 
-                    String change = dollarFormatWithPlus.format(rawAbsoluteChange);
-                    String percentage = percentageFormat.format(percentageChange / 100);
+                    String change = MoneyFormatUtils.formatDollarWithSign(rawAbsoluteChange);
+                    String percentage = MoneyFormatUtils.formatPercentage(percentageChange / 100);
 
                     if (displayMode.equals(this.getString(R.string.pref_display_mode_absolute_key))) {
                         if (rawAbsoluteChange > 0) {
@@ -127,7 +115,6 @@ public class DetailActivity extends AppCompatActivity {
                         tvChange.setText(percentage);
                     }
                     String history = cursor.getString(Contract.Quote.POSITION_HISTORY);
-                    Timber.d("Super history: " + history);
                     historyParser(history);
                 }
             }
@@ -142,20 +129,21 @@ public class DetailActivity extends AppCompatActivity {
         ArrayList<Entry> entryArray = new ArrayList<>();
 
         historyArray = history.split("\n");
+
         for(int i = 0; i < historyArray.length; i++) {
             String value = historyArray[i];
             String[] records = value.split(",");
             long timestamp = Long.parseLong(records[0]);
             float price = Float.parseFloat(records[1]);
-            //String x = dateFromMilliseconds(timestamp);
             Entry entry = new Entry(timestamp, price);
             entryArray.add(entry);
         }
+
         // We sort the entries by timestamp;
         Collections.sort(entryArray, new EntryXComparator());
         LineDataSet dataset = new LineDataSet(entryArray, tvSymbol.getText().toString());
-        dataset.setColor(mContext.getColor(R.color.colorAccent));
-        dataset.setValueTextColor(mContext.getColor(R.color.colorAccent));
+        dataset.setColor(ContextCompat.getColor(mContext, R.color.colorAccent));
+        dataset.setValueTextColor(ContextCompat.getColor(mContext, R.color.white));
 
         LineData lineData = new LineData(dataset);
         chart.setData(lineData);
@@ -191,6 +179,7 @@ public class DetailActivity extends AppCompatActivity {
     class StockHawkXAxisValueFormatter implements IAxisValueFormatter {
 
         public StockHawkXAxisValueFormatter() {
+
         }
 
         @Override
@@ -213,18 +202,13 @@ public class DetailActivity extends AppCompatActivity {
 
     class StockHawkYAxisValueFormatter implements IAxisValueFormatter {
 
-        private DecimalFormat dollarFormatWithPlus;
-
         public StockHawkYAxisValueFormatter() {
-            dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
-            dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
-            dollarFormatWithPlus.setPositivePrefix("+$");        }
+
+        }
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return dollarFormatWithPlus.format(value);
+            return MoneyFormatUtils.formatDollarWithSign(value);
         }
     }
-
-
 }

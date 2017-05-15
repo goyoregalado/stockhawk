@@ -10,26 +10,29 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/widget_header"
         android:background="@color/colorPrimaryDark">
-        <ImageView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/app_name"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_dollar"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@color/white"
+            android:layout_gravity="center|center_vertical"
             />
     </FrameLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimaryLight">
         <ListView
             android:id="@+id/widget_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="0dp"
+            android:divider="@color/white"
+            android:dividerHeight="1dp"
             tools:listitem="@layout/widget_detail_list_item"/>
+
         <TextView
             android:id="@+id/widget_empty"
             android:layout_width="match_parent"
@@ -37,6 +40,7 @@
             android:gravity="center"
             android:fontFamily="sans-serif-condensed"
             android:textAppearance="?android:textAppearanceLarge"
+            android:textColor="@color/white"
             android:text="@string/error_empty_list"/>
     </FrameLayout>
 
