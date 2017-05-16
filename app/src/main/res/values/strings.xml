@@ -42,5 +42,6 @@
 
     <string name="chart_content_description">Historical data for %s</string>
     <string name="example_symbol">GOOG</string>
+    <string name="allowed_chars">ABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
 
 </resources>
